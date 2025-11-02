@@ -9,7 +9,7 @@ def customfunc(event):
     logger.info("Begin function customfunc")
     # do your code here
     
-    print(event)
+    logging.info(event)
 
     logger.info("END function customfunc")
 
