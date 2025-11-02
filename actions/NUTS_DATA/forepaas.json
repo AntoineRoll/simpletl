@@ -1,7 +1,7 @@
 {
     "action": "custom",
     "description": "",
-    "display_name": "NUTS data pipeline",
+    "display_name": "NUTS data pipeline 2",
     "environment": {
         "_id": "6907d1e45e123320ede8ee6d",
         "build": null,
