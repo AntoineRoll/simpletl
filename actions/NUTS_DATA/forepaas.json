@@ -44,7 +44,7 @@
             "version": "latest"
         }
     ],
-    "name": "custom_action_1",
+    "name": "nuts_data",
     "params": {
         "content": "",
         "dependencies": {
