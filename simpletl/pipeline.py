@@ -29,6 +29,12 @@ class Pipeline:
 
         for transformation in self.transformations:
             df = transformation(df)
+            logging.info(
+                "Data transformed with %s resulting in %s rows and %s columns.", 
+                transformation.__name__, 
+                len(df), 
+                len(df.columns)
+            )
 
         for destination in self.destinations:
             destination.write_data(self.config.get("destination", {}), df)
