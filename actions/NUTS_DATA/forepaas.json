@@ -1,6 +1,6 @@
 {
     "action": "custom",
-    "action_id": "6907d1e45e123320ede8ee6c",
+    "action_id": "6907d1e45e123320ede8ee6d",
     "description": "",
     "display_name": "NUTS data pipeline",
     "environment": {
@@ -55,6 +55,6 @@
     },
     "tags": {
         "path": "",
-        "tags": ["NUTS"]
+        "tags": []
     }
 }
