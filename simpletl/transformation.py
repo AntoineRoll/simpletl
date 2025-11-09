@@ -11,6 +11,28 @@ class Transformation(ABC):
         pass
 
 
+def extract_features_from_geojson(df: pl.DataFrame) -> pl.DataFrame:
+    print(df.columns)
+    return pl.DataFrame(
+        (
+            df["features"]
+            .explode()
+            .struct.field("properties")
+            .alias("feature_properties"),
+            df["features"]
+            .explode()
+            .struct.field("geometry")
+            .struct.field("type")
+            .alias("geometry_type"),
+            df["features"]
+            .explode()
+            .struct.field("geometry")
+            .struct.field("coordinates")
+            .alias("geometry_coordinates"),
+        )
+    )
+
+
 def filter_rows(df: pl.DataFrame, condition: str) -> pl.DataFrame:
     # Use polars expressions to construct the filter condition
     expr = pl.col(condition.split(" ")[0]).gt(int(condition.split(" ")[2]))
