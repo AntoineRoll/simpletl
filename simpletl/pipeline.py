@@ -47,7 +47,6 @@ class PipelineMetadata:
     def _save_metadata(self):
         # Creating folder if not already exists
         os.makedirs(self.metadata_folder, exist_ok=True)
-        print(self.metadata)
         with open(self._metadata_path, "w") as f:
             json.dump(self.metadata, f, indent=2)
 

@@ -12,7 +12,6 @@ class Transformation(ABC):
 
 
 def extract_features_from_geojson(df: pl.DataFrame) -> pl.DataFrame:
-    print(df.columns)
     return pl.DataFrame(
         (
             df["features"]
