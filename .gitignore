@@ -1,4 +1,9 @@
+# Credentials
 .env
 
+# Development
 exploration/
 .continue/rules/*
+
+# Cache files
+*/__pycache__/*
