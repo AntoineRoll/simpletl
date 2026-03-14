@@ -1,4 +1,4 @@
-from simpletl.source import CsvSource
+from simpletl.sources import CsvSource
 import polars as pl
 
 def test_csv_source():

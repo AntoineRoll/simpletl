@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from simpletl.destination import DeltaTableDestination
+from simpletl.destinations.delta import DeltaTableDestination
 import polars as pl
 
 def test_delta_table_destination():

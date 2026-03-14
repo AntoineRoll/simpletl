@@ -1,15 +1,19 @@
-from typing import List, Callable
+from typing import List
 import polars as pl
-from .source import Source
-from .destination import Destination
+from simpletl.abstract import Source, Transformation, Destination
+from simpletl.sources import sources as simpletl_sources
+from simpletl.destinations import destinations as simpletl_destinations
+from simpletl.transformations import transformations as simpletl_transformations
 import logging
 import json
 import os
 from datetime import datetime, timezone
 
+from yaml import safe_load
+
 
 class PipelineMetadata:
-    def __init__(self, pipeline_id: str, metadata_folder: str = "./simpletl_pipelines"):
+    def __init__(self, pipeline_id: str, metadata_folder: str = ".simpletl_pipelines"):
         self.pipeline_id = pipeline_id
         self.metadata_folder = metadata_folder
         self.metadata = {}
@@ -76,7 +80,7 @@ class Pipeline(PipelineMetadata):
         self,
         config: dict,
         source: Source,
-        transformations: List[Callable[[pl.DataFrame], pl.DataFrame]] = None,
+        transformations: List[Transformation] = None,
         destinations: List[Destination] = None,
         store_metadata: bool = False,
     ):
@@ -117,6 +121,8 @@ class Pipeline(PipelineMetadata):
             if self.store_metadata:
                 run_info["status"] = "failed"
                 run_info["error"] = str(e)
+                self.log_run_end(run_info)
+                self._save_metadata()
             raise e
         finally:
             if self.store_metadata:
@@ -126,21 +132,57 @@ class Pipeline(PipelineMetadata):
         return df
 
     def process_data(self):
-        df = self.source.get_data(self.config.get("source", {}))
-        logging.info(
-            "Source data with %s rows and %s columns loaded", len(df), len(df.columns)
-        )
-
-        for transformation in self.transformations:
-            df = transformation(df)
+        df = self.source.read_data(self.config.get("source", {}))
+        
+        # Can only get length and columns after lazy evaluation
+        if isinstance(df, pl.DataFrame):
             logging.info(
-                "Data transformed with %s resulting in %s rows and %s columns.",
-                transformation.__name__,
-                len(df),
-                len(df.columns),
+                "Source data with %s rows and %s columns loaded", len(df), len(df.columns)
             )
 
+        for transformation in self.transformations:
+            df = transformation.transform_data(df)
+            if isinstance(df, pl.DataFrame):
+                logging.info(
+                    "Data transformed with %s resulting in %s rows and %s columns.",
+                    transformation.__class__.__name__,
+                    len(df),
+                    len(df.columns),
+                )
+
         for destination in self.destinations:
-            destination.write_data(self.config.get("destination", {}), df)
+            destination.write_data(df)
 
         return df
+    
+    @classmethod
+    def from_config_file(cls, config_fp):
+        with open(config_fp, 'r') as f:
+                config = safe_load(f)
+        
+        if config.get("source", {}).get("type") not in simpletl_sources:
+            raise ValueError(f"Unsupported or undefined source type: {config.get('source').get('type')}.")
+        
+        source_cls = simpletl_sources[config.get("source").get("type")]
+        source = source_cls(config.get("source"))
+        
+        transformations = []
+        for transfo_def in config.get("transformations", []):
+            
+            if transfo_def.get("type") not in simpletl_transformations:
+                raise ValueError(f"Unsupported or undefined transformation type: {transfo_def.get('type')}.")
+            
+            transfo_cls = simpletl_transformations[transfo_def.get("type")]
+            transformations.append(transfo_cls(transfo_def))
+
+        destinations = []
+        for dest_def in config.get("destinations", []):
+            if dest_def.get("type") not in simpletl_destinations:
+                raise ValueError(f"Unsupported or undefined destination type: {dest_def.get('type')}.")
+            dest_cls = simpletl_destinations[dest_def.get("type")]
+            destinations.append(dest_cls(dest_def))
+
+        # Create instance with loaded config
+        pipeline = cls(config=config, source=source, transformations=transformations, destinations=destinations)
+            
+        return pipeline

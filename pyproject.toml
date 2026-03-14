@@ -11,6 +11,8 @@ dependencies = [
     "boto3>=1.34,<1.35",
     "cloudpathlib>=0.23.0",
     "deltalake==1.2.1",
+    "geopandas>=1.1.2",
+    "lxml>=6.0.2",
     "pandas>=2.3.3",
     "polars>=1.35.1",
     "pyyaml>=6.0.3",
@@ -18,7 +20,7 @@ dependencies = [
 ]
 
 [project.scripts]
-simpletl = "simpletl:main"
+simpletl = "simpletl.main:main"
 
 [build-system]
 requires = ["hatchling"]
