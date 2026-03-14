@@ -9,7 +9,7 @@ class CsvSource(Source):
         
         if self.url is None: raise ValueError("URL is required for CSV source under `source.url`")
 
-    def get_data(self, source_config: dict) -> pl.DataFrame:
+    def read_data(self, source_config: dict) -> pl.DataFrame:
         url = source_config.get("url")
         
         separator = source_config.get("separator", ",")
