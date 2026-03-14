@@ -1,5 +1,5 @@
 # SimplETL
-SimplETL is a Python package made to ease the build, maintenance, and monitoring of simple, lightweight ETL pipelines. The ultimate goal is to provide users with a set of tools (Python classes and functions) that can be embedded in a Python script.
+SimplETL is a Python package made to build, run, and monitor simple, lightweight ETL pipelines. The ultimate goal is to provide users with a set of tools (Python classes and functions) that can be embedded in a Python script.
 
 ## Installation
 
@@ -18,9 +18,28 @@ SimplETL is a Python package made to ease the build, maintenance, and monitoring
 ## Project Structure
 - `simpletl/`: Core package containing the ETL components.
 - `tests/`: Contains test cases for the ETL components.
-- `sales_pipeline.py`: Example ETL pipeline script.
-- `sales_config.yml`: Example configuration file for the pipeline.
 - `README.md`: This file.
+
+## Pipeline structure
+
+```mermaid
+flowchart LR
+   subgraph SOURCE
+      S1[Source]
+   end
+   subgraph TRANSFORMATIONS
+      T1[Transformation 1] --> T2[Transformation 2] --> T3[Transformation N]
+   end
+   subgraph DESTINATIONS
+      D1[Destination 1]
+      D2[Destination 2]
+      D3[Destination N]
+   end
+   S1 --> T1
+   T3 --> D1
+   T3 --> D2
+   T3 --> D3
+```
 
 ## Running the Pipeline
 
@@ -40,8 +59,10 @@ SimplETL is a Python package made to ease the build, maintenance, and monitoring
    - Ensure all dependencies are installed.
    - Run the pipeline script.
    ```sh
-   python sales_pipeline.py
+   uv run simpletl sales_config.yml
    ```
+
+Alternatively, a pipeline can be crafted in full Python code.
 
 ## Testing
 
@@ -65,5 +86,5 @@ MIT License. See [LICENSE](LICENSE) for more information.
 
 ## Contact
 
-- **Project Maintainer:** [Your Name]
-- **Email:** [your.email@example.com]
+- **Project Maintainer:** [Antoine Rollet]
+- **Email:** [antoine-rollet@live.fr]
