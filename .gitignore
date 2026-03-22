@@ -6,4 +6,4 @@ exploration/
 .continue/rules/*
 
 # Cache files
-*/__pycache__/*
+*.pyc

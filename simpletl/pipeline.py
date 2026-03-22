@@ -132,7 +132,7 @@ class Pipeline(PipelineMetadata):
         return df
 
     def process_data(self):
-        df = self.source.read_data(self.config.get("source", {}))
+        df = self.source.read_data()
         
         # Can only get length and columns after lazy evaluation
         if isinstance(df, pl.DataFrame):
