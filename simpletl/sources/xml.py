@@ -91,7 +91,7 @@ class LargeXmlSource(Source):
     def __init__(self, config: dict):
         self.url = config.get("source", {}).get("url")
 
-    def get_data(self, config: dict):
+    def read_data(self,):
         
         logging.info("Getting data from %s", self.url)
 

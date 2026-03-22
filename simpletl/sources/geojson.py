@@ -21,13 +21,13 @@ class WebJsonSource(Source):
 
         return pl.read_json(raw_data)
     
-class WebGeojsonSource(Source):
+class GeojsonSource(Source):
     def __init__(self, config: dict):
         self.url = config.get("source", {}).get("url")
         self.format = config.get("source", {}).get("format")
 
-    def get_data(self, source_config: dict) -> pl.DataFrame:
-        url = source_config.get("url")
+    def read_data(self) -> pl.DataFrame:
+        url = self.url
 
         response = requests.get(url)
         response.raise_for_status()
@@ -52,24 +52,3 @@ class WebGeojsonSource(Source):
         return pl.DataFrame(features)
 
 
-class WebShapefileSource(Source):
-    def __init__(self, config: dict):
-        self.url = config.get("source", {}).get("url")
-        self.format = config.get("source", {}).get("format")
-
-    def read_data(self, source_config: dict) -> pl.DataFrame:
-        url = source_config.get("url")
-        
-        gdf = gpd.read_file(url)
-        gdf = gdf.to_crs(epsg=4326)  # Reproject to WGS84
-        
-        # Convert any columns with geometry type to string
-        for col in gdf.columns:
-            if gdf[col].dtype == "geometry":
-                gdf[col+"_geojson"] = gdf[col].__geo_interface__["features"]
-                gdf[col+"_geojson"] = gdf[col+"_geojson"].apply(lambda x: json.dumps(x))
-                gdf[col] = gdf[col].to_wkt()
-        
-        df = pl.from_pandas(gdf)
-
-        return df
